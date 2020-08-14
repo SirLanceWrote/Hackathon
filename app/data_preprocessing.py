@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 resizeRescale = tf.keras.Sequential([
   tf.keras.layers.experimental.preprocessing.Resizing(224, 224),
   tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
@@ -16,13 +15,13 @@ def augment(image):
     tmp = []
     images = []
     operations = [tf.image.flip_left_right, tf.image.flip_up_down, adjustSaturation, adjustQuality]
-    image = resizeRescale(image)
     images.append(image)
     for operation in operations: 
         for image in images:
             tmp.append(operation(image))
         images += tmp
         tmp = []
+    images = [resizeRescale(img) for img in images]
     return images
 
 def augmentAll(imageLocations = []):
