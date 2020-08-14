@@ -43,4 +43,9 @@ def augmentAll(imageURLs):
         dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
 
-augmentAll(['https://res.cloudinary.com/nekolya75/image/upload/v1597424646/RealityNeurons/file_ptpxik.jpg'])
+def augmentAllFiles(imagePaths):
+    dataset = []
+    for imagePath in imagePaths:
+        image = tf.keras.preprocessing.image.load_img(imagePath, color_mode='rgb', interpolation='nearest')
+        dataset += augment(image)
+    return tf.data.Dataset.from_tensor_slices(dataset)
