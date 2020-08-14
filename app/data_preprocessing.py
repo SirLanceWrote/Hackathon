@@ -3,8 +3,12 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-resizeRescale = tf.keras.Sequential([
+
+resize = tf.keras.Sequential([
   tf.keras.layers.experimental.preprocessing.Resizing(224, 224),
+])
+
+rescale = tf.keras.Sequential([
   tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
 ])
 
@@ -23,13 +27,13 @@ def augment(image):
     tmp = []
     images = []
     operations = [tf.image.flip_left_right, tf.image.flip_up_down, adjustSaturation, adjustQuality]
-    images.append(image)
+    images.append(resize(image))
     for operation in operations: 
         for image in images:
             tmp.append(operation(image))
         images += tmp
         tmp = []
-    images = [resizeRescale(img) for img in images]
+    images = [rescale(img) for img in images]
     return images
 
 def augmentAll(imageURLs):
