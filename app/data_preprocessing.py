@@ -1,5 +1,5 @@
 import tensorflow as tf
-from PIL import Image
+
 
 resizeRescale = tf.keras.Sequential([
   tf.keras.layers.experimental.preprocessing.Resizing(224, 224),
