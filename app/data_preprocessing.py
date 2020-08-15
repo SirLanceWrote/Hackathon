@@ -53,11 +53,18 @@ def augmentAll(imageURLs):
         dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
 
+def loadImageFromFile(imagePath):
+    try:
+        image = Image.open(imagePath)
+    except:
+        return (None, False)
+    return (tf.keras.preprocessing.image.img_to_array(image), True)
 
 def augmentAllFiles(imagePaths):
     dataset = []
     for imagePath in imagePaths:
-        image = loadImageFromFile(imagePath)
-        if image.shape[2] == 3:
-            dataset += augment(image)
+        image, loaded = loadImageFromFile(imagePath)
+        if loaded:
+            if image.shape[2] == 3:
+                dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
