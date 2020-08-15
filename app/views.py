@@ -1,20 +1,48 @@
 from .yandex_parser import yandex_parser
 from app import app
-from flask import Flask, flash, request, redirect, url_for, session, jsonify, render_template
+import sys
+from flask import Flask, flash, request, redirect, url_for, session, jsonify, render_template, make_response
+import uuid
 
-@app.route('/', methods=["POST", "GET"])
-def index():
+app.config['SECRET_KEY'] = 'XYp7UAjYC6KAhjdhFKoPTHQKRgULDwMG'
+
+@app.route('/', methods=["POST", "GET", "OPTIONS"])
+def index():    
     if request.method == "POST":
-        if 'file' not in request.files:
-            return redirect(request.url)
-        file = request.files["file"]
+        req = request.get_json(force=True)
+        print('req = ', req)
+        if req['type'] == "parse_data_yandex":
+            search_request = req['search_request']
+            urls = yandex_parser(search_request)
+            res = jsonify({ "status": 200, "image_ids": urls })
+            return make_response(res)
+            
+        elif req['type'] == "upload_data":
+            pass
+        
+        elif req['type'] == "get_image_list":
+            pass
+
+        elif req['type'] == "session_begin":
+            session["id"] = uuid.uuid4()
+            res = make_response(jsonify({ "status": 200, "session_id": session["id"]}))
+            return res
         #upload_result = upload(file, use_filename='true',
                                 # folder='RealityNeurons/')
         #cloudinary_url(upload_result['public_id'], format='jpg')
         return redirect(url_for('success'))
+    return ''
         
-    return render_template('index.html')
+    
 
+def parse_yandex(text):
+    #folder = 'RealityNeurons/'+text
+    urls = yandex_parser(text)
+    # for url in urls:
+    #     cloudinary.uploader.upload(url, folder=folder)
+    urls = list(urls)
+    res = {"data":urls}
+    return jsonify(res)
 
 @app.route('/mew/', methods=["POST", "GET"])
 def yandex_load():

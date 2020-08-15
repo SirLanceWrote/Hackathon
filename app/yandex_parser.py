@@ -15,4 +15,6 @@ def yandex_parser(m_class):
         for r in result:
             jsonify = json.loads(r["data-bem"])
             urls.add(jsonify['serp-item']['preview'][0]['url'])
+    urls = list(urls)
     return urls
+
