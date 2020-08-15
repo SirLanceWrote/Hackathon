@@ -3,6 +3,10 @@ from app import app
 import sys
 from flask import Flask, flash, request, redirect, url_for, session, jsonify, render_template, make_response
 import uuid
+from PIL import Image
+import requests
+from io import BytesIO
+
 
 app.config['SECRET_KEY'] = 'XYp7UAjYC6KAhjdhFKoPTHQKRgULDwMG'
 
@@ -33,16 +37,6 @@ def index():
         return redirect(url_for('success'))
     return ''
         
-    
-
-def parse_yandex(text):
-    #folder = 'RealityNeurons/'+text
-    urls = yandex_parser(text)
-    # for url in urls:
-    #     cloudinary.uploader.upload(url, folder=folder)
-    urls = list(urls)
-    res = {"data":urls}
-    return jsonify(res)
 
 @app.route('/mew/', methods=["POST", "GET"])
 def yandex_load():
