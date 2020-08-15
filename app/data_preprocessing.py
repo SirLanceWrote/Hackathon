@@ -40,11 +40,11 @@ def augment(image):
     images = []
     operations = [tf.image.flip_left_right, tf.image.flip_up_down, adjustSaturation, adjustQuality]
     images.append(resize(image))
-    for operation in operations: 
-        for image in images:
-            tmp.append(operation(image))
-        images += tmp
-        tmp = []
+    # for operation in operations: 
+    #     for image in images:
+    #         tmp.append(operation(image))
+    #     images += tmp
+    #     tmp = []
     images = [rescale(img) for img in images]
     return images
 
@@ -64,5 +64,5 @@ def augmentAllFiles(imagePaths):
         if loaded:
             if image.shape[2] == 3:
                 dataset += augment(image)
-    return tf.data.Dataset.from_tensor_slices(dataset)
+    return dataset
 
