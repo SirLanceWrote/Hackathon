@@ -15,13 +15,13 @@ rescale = tf.keras.Sequential([
 
 def loadImageFromURL(imageURL):
     response = requests.get(imageURL)
-    image = Image.open(BytesIO(response.content))
+    image = Image.open(BytesIO(response.content)).convert('RGB')
     return tf.keras.preprocessing.image.img_to_array(image)
 
 
 def loadImageFromFile(imagePath):
     try:
-        image = Image.open(imagePath)
+        image = Image.open(imagePath).convert('RGB')
     except:
         return (None, False)
     return (tf.keras.preprocessing.image.img_to_array(image), True)
@@ -56,6 +56,7 @@ def augmentAll(imageURLs):
         dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
 
+
 def augmentAllFiles(imagePaths):
     dataset = []
     for imagePath in imagePaths:
@@ -64,3 +65,4 @@ def augmentAllFiles(imagePaths):
             if image.shape[2] == 3:
                 dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
+
