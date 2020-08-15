@@ -2,6 +2,7 @@ import tensorflow as tf
 from PIL import Image
 import requests
 from io import BytesIO
+import os
 
 
 resize = tf.keras.Sequential([
@@ -66,3 +67,19 @@ def augmentAllFiles(imagePaths):
                 dataset += augment(image)
     return dataset
 
+
+def saveImage(imageURL, path, name):
+    response = requests.get(imageURL)
+    image = Image.open(BytesIO(response.content)).convert('RGB')
+    image.save(os.path.join(path, name))
+
+
+def saveImages(imageURLs, path):
+    try:
+        os.makedirs(path)
+    except Exception:
+        pass
+    count = len(imageURLs)
+    for i, imageURL in enumerate(imageURLs):
+        print(str(i) + '/' + str(count))
+        saveImage(imageURL, path, str(i) + ".jpg")
