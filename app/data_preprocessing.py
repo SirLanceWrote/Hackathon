@@ -20,8 +20,11 @@ def loadImageFromURL(imageURL):
 
 
 def loadImageFromFile(imagePath):
-    image = Image.open(imagePath)
-    return tf.keras.preprocessing.image.img_to_array(image)
+    try:
+        image = Image.open(imagePath)
+    except:
+        return (None, False)
+    return (tf.keras.preprocessing.image.img_to_array(image), True)
 
 
 def adjustSaturation(image):
@@ -52,13 +55,6 @@ def augmentAll(imageURLs):
         image = loadImageFromURL(imageURL)
         dataset += augment(image)
     return tf.data.Dataset.from_tensor_slices(dataset)
-
-def loadImageFromFile(imagePath):
-    try:
-        image = Image.open(imagePath)
-    except:
-        return (None, False)
-    return (tf.keras.preprocessing.image.img_to_array(image), True)
 
 def augmentAllFiles(imagePaths):
     dataset = []
