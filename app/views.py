@@ -1,5 +1,6 @@
 from .yandex_parser import yandex_parser
 from app import app
+from . import api
 import sys
 from flask import Flask, flash, request, redirect, url_for, session, jsonify, render_template, make_response
 import uuid
@@ -116,6 +117,11 @@ def index():
             class_name = req['class_name']
             session_id = req['session_id']
             print(class_name, session_id)
+
+            api.load_data_from_urls(arr, class_name)
+
+            api.train_model(class_name)
+            
             return make_response()
         #upload_result = upload(file, use_filename='true',
                                 # folder='RealityNeurons/')
