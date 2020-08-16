@@ -12,7 +12,9 @@ import cloudinary.api
 from cloudinary.utils import cloudinary_url
 #IMAGES
 from PIL import Image
+import io
 from io import BytesIO
+import base64
 
 def scale_image(url):
     response = requests.get(url)
@@ -52,15 +54,15 @@ cloudinary.config(cloud_name='nekolya75', api_key='829731229717378',
 
 
 app.config['SECRET_KEY'] = 'XYp7UAjYC6KAhjdhFKoPTHQKRgULDwMG'
-
+arr = []  
 @app.route('/', methods=["POST", "GET", "OPTIONS"])
-def index():    
+def index(): 
+    global arr
     if request.method == "POST":
         req = request.get_json(force=True)
-        print('req = ', req)
         if req['type'] == "parse_data_yandex":
+            print('req = ', req)
             search_request = req['search_request']
-            get_adress = "https://res.cloudinary.com/nekolya75/image/upload/v1597424731/RealityNeurons/"
             folder = 'RealityNeurons/' + search_request
             urls = yandex_parser(search_request)
             success_add = 0
@@ -82,44 +84,41 @@ def index():
             urls = []
             for i in range(success_add):
                 urls.append(str(i)+".jpg")
+            arr = urls.copy()
             res = jsonify({ "status": 200, "image_ids": urls })
             return make_response(res)
             
         elif req['type'] == "upload_data":
+            # code = req['image']
+            # imgdata = base64.b64decode(code)
+            # image = Image.open(io.BytesIO(imgdata))
+            # print(img[0:6])
             pass
         
         elif req['type'] == "get_image_list":
-            pass
+            print('req = ', req)
+            res = jsonify({ "status": 200, "image_ids": arr })
+            return make_response(res)
+
+        elif req['type'] == "remove_image":
+            print('req = ', req)
+            cloudinary.uploader.destroy(req['image_id'])
+            print(arr, req['image_id'])
+            arr.remove(req['image_id'])
 
         elif req['type'] == "session_begin":
             session["id"] = uuid.uuid4()
             res = make_response(jsonify({ "status": 200, "session_id": session["id"]}))
             return res
+
+        elif req['type'] == "startTraining":
+            print('req = ', req)
+            class_name = req['class_name']
+            session_id = req['session_id']
+            print(class_name, session_id)
+            return make_response()
         #upload_result = upload(file, use_filename='true',
                                 # folder='RealityNeurons/')
         #cloudinary_url(upload_result['public_id'], format='jpg')
         return ''
     return ''
-        
-
-@app.route('/mew/', methods=["POST", "GET"])
-def yandex_load():
-    if request.method == "POST":
-        text = request.form['text']
-        if text !="":
-            folder = 'RealityNeurons/'+text
-            urls = yandex_parser(text)
-            # for url in urls:
-            #     cloudinary.uploader.upload(url, folder=folder)
-            urls = list(urls)
-            res = {"urls":urls}
-            return jsonify(res)
-    return render_template('mew.html')
-
-@app.route('/error/')
-def error():
-    return 'error'
-
-@app.route('/success/')
-def success():
-    return 'success page'
