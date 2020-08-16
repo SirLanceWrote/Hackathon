@@ -128,3 +128,5 @@ dmypy.json
 DataSets
 SplitDataset
 tmp
+
+.vscode
